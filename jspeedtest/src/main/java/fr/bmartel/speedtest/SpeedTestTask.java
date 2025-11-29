@@ -546,21 +546,22 @@ public class SpeedTestTask {
         try {
             if ("https".equals(mProtocol)) {
                 final SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                mSocket = ssf.createSocket();
+                final Socket plainSocket = new Socket();
+                plainSocket.setReuseAddress(true);
+                plainSocket.setKeepAlive(true);
+                plainSocket.connect(new InetSocketAddress(mHostname, mPort));
+                mSocket = ssf.createSocket(plainSocket, mHostname, mPort, true);
+                ((javax.net.ssl.SSLSocket) mSocket).startHandshake();
             } else {
                 mSocket = new Socket();
+                mSocket.setReuseAddress(true);
+                mSocket.setKeepAlive(true);
+                mSocket.connect(new InetSocketAddress(mHostname, mPort));
             }
 
             if (mSocketInterface.getSocketTimeout() != 0 && download) {
                 mSocket.setSoTimeout(mSocketInterface.getSocketTimeout());
             }
-
-            /* establish mSocket parameters */
-            mSocket.setReuseAddress(true);
-
-            mSocket.setKeepAlive(true);
-
-            mSocket.connect(new InetSocketAddress(mHostname, mPort));
 
             if (mReadExecutorService == null || mReadExecutorService.isShutdown()) {
                 mReadExecutorService = Executors.newSingleThreadExecutor();
