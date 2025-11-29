@@ -205,7 +205,9 @@ public class SpeedTestUtils {
         if (httpFrame.getContentLength() <= 0 && !httpFrame.isChunkedTransfer() && !forceCloseSocket) {
             for (int i = 0; i < listenerList.size(); i++) {
                 listenerList.get(i).onError(SpeedTestError.INVALID_HTTP_RESPONSE, "Error content length " +
-                        "is inconsistent");
+                        "is inconsistent (contentLength=" + httpFrame.getContentLength() +
+                        ", chunked=" + httpFrame.isChunkedTransfer() +
+                        ", headers=" + httpFrame.getHeaders() + ")");
             }
         }
     }
