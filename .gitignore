@@ -12,6 +12,9 @@
 bin/
 gen/
 
+# IA
+.claude/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
