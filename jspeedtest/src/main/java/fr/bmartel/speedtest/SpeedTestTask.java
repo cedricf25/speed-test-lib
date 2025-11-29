@@ -690,11 +690,7 @@ public class SpeedTestTask {
             mTimeEnd = System.nanoTime();
             closeSocket();
             closeExecutors();
-        } catch (IOException |
-                InterruptedException e
-                )
-
-        {
+        } catch (IOException e) {
             mReportInterval = false;
             catchError(e.getMessage());
         }
@@ -812,7 +808,7 @@ public class SpeedTestTask {
                 }
             }
             closeExecutors();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             mReportInterval = false;
             if (!mErrorDispatched) {
                 catchError(e.getMessage());

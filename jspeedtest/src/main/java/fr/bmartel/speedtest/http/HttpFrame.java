@@ -78,7 +78,7 @@ public class HttpFrame implements IHttpFrame {
         }
     }
 
-    public HttpStates parseHttp(final InputStream inputStream) throws IOException, InterruptedException {
+    public HttpStates parseHttp(final InputStream inputStream) throws IOException {
         final BufferedReader reader = new BufferedReader(
                 new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         final String firstLine = reader.readLine();
