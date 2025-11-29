@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * <p/>
- * Copyright (c) 2016-2017 Bertrand Martel
+ * Copyright (c) 2016-2024 Bertrand Martel
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,25 @@
  * THE SOFTWARE.
  */
 
-package fr.bmartel.speedtest.test.server;
+package fr.bmartel.speedtest.http;
 
-import fr.bmartel.speedtest.http.IHttpFrame;
-import fr.bmartel.speedtest.http.HttpStates;
+import java.util.Map;
 
-/**
- * Http custom event : notify anybody that add that event listener to server
- * list of http request / response.
- *
- * @author Bertrand Martel
- */
-public interface IHttpServerEventListener {
+public interface IHttpFrame {
 
-    /**
-     * called wen server is started.
-     */
-    void onServerStarted();
+    int getStatusCode();
 
-    /**
-     * called when Http frame received from inputstream.
-     *
-     * @param httpFrame       http frame object
-     * @param receptionStates reception decoding states (should be HTTP_FRAME_OK if no
-     *                        decoding error happened)
-     */
-    void onHttpFrameReceived(IHttpFrame httpFrame,
-                             HttpStates receptionStates, IHttpStream httpStream);
+    String getReasonPhrase();
 
+    long getContentLength();
+
+    Map<String, String> getHeaders();
+
+    String getHttpVersion();
+
+    String getUri();
+
+    String getMethod();
+
+    String getBody();
 }

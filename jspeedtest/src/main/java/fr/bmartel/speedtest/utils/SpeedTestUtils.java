@@ -24,8 +24,8 @@
 
 package fr.bmartel.speedtest.utils;
 
-import fr.bmartel.protocol.http.HttpFrame;
-import fr.bmartel.protocol.http.states.HttpStates;
+import fr.bmartel.speedtest.http.HttpFrame;
+import fr.bmartel.speedtest.http.HttpStates;
 import fr.bmartel.speedtest.SpeedTestConst;
 import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.inter.ISpeedTestSocket;

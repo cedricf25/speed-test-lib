@@ -1,31 +1,28 @@
-apply plugin: 'java'
-apply plugin: 'pmd'
-
-repositories {
-    mavenCentral()
+plugins {
+    id 'java'
 }
 
-pmd {
-    toolVersion = '5.3.2'
-    ruleSets = []
-    ruleSetFiles = files('config/pmd/rulesets.xml')
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
-    compile project(':jspeedtest')
+    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
+    implementation project(':jspeedtest')
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+tasks.register('sourcesJar', Jar) {
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+tasks.register('javadocJar', Jar) {
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
+    dependsOn javadoc
 }
 
 artifacts {
@@ -33,95 +30,63 @@ artifacts {
     archives sourcesJar
 }
 
-task findConventions << {
-    println project.getConvention()
-}
-
-task downloadFile(type: JavaExec) {
+tasks.register('downloadFile', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.DownloadFileExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.DownloadFileExample'
 }
 
-task downloadFTP(type: JavaExec) {
+tasks.register('downloadFTP', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.DownloadFtpExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.DownloadFtpExample'
 }
 
-task downloadFileProxy(type: JavaExec) {
+tasks.register('downloadFileProxy', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.DownloadFileProxyExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.DownloadFileProxyExample'
 }
 
-task uploadFile(type: JavaExec) {
-    classpath sourceSets.test.runtimeClasspath
-    main = "fr.bmartel.speedtest.examples.UploadFileExample"
-    args ""
-}
-
-task uploadFTP(type: JavaExec) {
-    classpath sourceSets.test.runtimeClasspath
-    main = "fr.bmartel.speedtest.examples.UploadFtpExample"
-    args ""
-}
-
-task fixedDownload(type: JavaExec) {
+tasks.register('uploadFile', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.FixedTimeDownloadExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.UploadFileExample'
 }
 
-task fixedUpload(type: JavaExec) {
+tasks.register('uploadFTP', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.FixedTimeUploadExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.UploadFtpExample'
 }
 
-task repeatDownload(type: JavaExec) {
+tasks.register('fixedDownload', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.RepeatDownloadExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.FixedTimeDownloadExample'
 }
 
-task repeatUpload(type: JavaExec) {
+tasks.register('fixedUpload', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.RepeatUploadExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.FixedTimeUploadExample'
 }
 
-task repeatChain(type: JavaExec) {
+tasks.register('repeatDownload', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.ChainingRepeatExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.RepeatDownloadExample'
 }
 
-task repeatChainFixed(type: JavaExec) {
+tasks.register('repeatUpload', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    classpath += sourceSets.main.resources
-    main = "fr.bmartel.speedtest.examples.ChainingFixedExample"
-    args ""
+    mainClass = 'fr.bmartel.speedtest.examples.RepeatUploadExample'
 }
 
-task generateJavadoc(type: Javadoc) {
+tasks.register('repeatChain', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'fr.bmartel.speedtest.examples.ChainingRepeatExample'
+}
+
+tasks.register('repeatChainFixed', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'fr.bmartel.speedtest.examples.ChainingFixedExample'
+}
+
+tasks.register('generateJavadoc', Javadoc) {
     source = sourceSets.main.allJava
-    classpath = configurations.compile
-    destinationDir = file("./doc/")
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
+    classpath = configurations.compileClasspath
+    destinationDir = file("${project.projectDir}/doc/")
 }

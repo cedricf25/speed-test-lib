@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">speedtest.tele2.net</domain>
+        <domain includeSubdomains="true">bouygues.testdebit.info</domain>
+        <domain includeSubdomains="true">proof.ovh.net</domain>
+        <domain includeSubdomains="true">scaleway.testdebit.info</domain>
+    </domain-config>
+</network-security-config>

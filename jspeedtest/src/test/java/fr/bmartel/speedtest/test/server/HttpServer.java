@@ -24,8 +24,8 @@
 
 package fr.bmartel.speedtest.test.server;
 
-import fr.bmartel.protocol.http.inter.IHttpFrame;
-import fr.bmartel.protocol.http.states.HttpStates;
+import fr.bmartel.speedtest.http.IHttpFrame;
+import fr.bmartel.speedtest.http.HttpStates;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

@@ -24,12 +24,12 @@
 
 package fr.bmartel.speedtest.test;
 
-import fr.bmartel.protocol.http.HttpResponseFrame;
-import fr.bmartel.protocol.http.HttpVersion;
-import fr.bmartel.protocol.http.StatusCodeObject;
-import fr.bmartel.protocol.http.constants.StatusCodeList;
-import fr.bmartel.protocol.http.inter.IHttpFrame;
-import fr.bmartel.protocol.http.states.HttpStates;
+import fr.bmartel.speedtest.http.HttpResponseFrame;
+import fr.bmartel.speedtest.http.HttpVersion;
+import fr.bmartel.speedtest.http.StatusCodeObject;
+import fr.bmartel.speedtest.http.StatusCodeList;
+import fr.bmartel.speedtest.http.IHttpFrame;
+import fr.bmartel.speedtest.http.HttpStates;
 import fr.bmartel.speedtest.SpeedTestReport;
 import fr.bmartel.speedtest.SpeedTestSocket;
 import fr.bmartel.speedtest.inter.IRepeatListener;

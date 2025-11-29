@@ -1,164 +1,111 @@
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-group 'fr.bmartel'
-version '1.32.1'
-
-apply plugin: 'java'
-targetCompatibility = '1.7'
-sourceCompatibility = '1.7'
-
-apply plugin: 'pmd'
-
-pmd {
-    toolVersion = '5.3.2'
-    ruleSets = []
-    ruleSetFiles = files('config/pmd/rulesets.xml')
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
 }
 
-repositories {
-    mavenCentral()
+group = 'fr.bmartel'
+version = '2.0.0'
+
+android {
+    namespace 'fr.bmartel.speedtest'
+    compileSdk rootProject.ext.compileSdk
+
+    defaultConfig {
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        warningsAsErrors false
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
-    compile 'fr.bmartel:http-endec:1.04'
-    compile 'commons-net:commons-net:3.6'
-    testCompile 'junit:junit:4.11'
-    testCompile 'net.jodah:concurrentunit:0.4.2'
-    testCompile 'com.googlecode.json-simple:json-simple:1.1.1'
-    testCompile 'com.google.code.gson:gson:2.8.0'
+    implementation 'commons-net:commons-net:3.10.0'
+
+    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
+    testImplementation 'net.jodah:concurrentunit:0.4.6'
+    testImplementation "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
+    testImplementation 'org.json:json:20231013'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
 }
 
-def siteUrl = 'https://github.com/bertrandmartel/speed-test-lib'
-def gitUrl = 'https://github.com/bertrandmartel/speed-test-lib.git'
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'fr.bmartel'
+            artifactId = 'jspeedtest'
+            version = project.version
 
-bintray {
-    user = "$System.env.BINTRAY_USER"
-    key = "$System.env.BINTRAY_KEY"
-
-    configurations = ['archives'] //When uploading configuration files
-
-    dryRun = false //Whether to run this as dry-run, without deploying
-    publish = true //If version should be auto published after an upload
-
-    pkg {
-        repo = 'maven'
-        name = 'speedtest'
-        desc = 'Speed Test library for Java/Android'
-        websiteUrl = siteUrl
-        issueTrackerUrl = 'https://github.com/bertrandmartel/speed-test-lib/issues'
-        vcsUrl = gitUrl
-        licenses = ['MIT']
-        labels = ['speed-test', 'speedtest']
-        publicDownloadNumbers = true
-
-        version {
-            name = project.version //Bintray logical version name
-            vcsTag = project.version
-
-            gpg {
-                sign = true
-                passphrase = "$System.env.GPG_PASSPHRASE"
+            afterEvaluate {
+                from components.release
             }
 
-            mavenCentralSync {
-                sync = true
-                //Optional (true by default). Determines whether to sync the version to Maven Central.
-                user = "$System.env.MAVEN_CENTRAL_USER_TOKEN" //OSS user token
-                password = "$System.env.MAVEN_CENTRAL_PASSWORD" //OSS user password
-                close = '1'
-                //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-            }
-        }
-    }
-}
+            pom {
+                name = 'JSpeedTest'
+                description = 'Speed Test library for Java/Android'
+                url = 'https://github.com/bertrandmartel/speed-test-lib'
 
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                description 'Speed Test library for Java/Android'
-                packaging 'jar'
-                name 'jspeedtest'
-                url siteUrl
                 licenses {
                     license {
-                        name 'The MIT License'
-                        url 'https://github.com/bertrandmartel/speed-test-lib/blob/master/LICENSE.md'
+                        name = 'The MIT License'
+                        url = 'https://github.com/bertrandmartel/speed-test-lib/blob/master/LICENSE.md'
                     }
                 }
+
                 developers {
                     developer {
-                        id 'bertrandmartel'
-                        name 'Bertrand Martel'
-                        email 'bmartel.fr@gmail.com'
+                        id = 'bertrandmartel'
+                        name = 'Bertrand Martel'
+                        email = 'bmartel.fr@gmail.com'
                     }
                 }
+
                 scm {
-                    connection 'https://github.com/bertrandmartel/speed-test-lib.git'
-                    developerConnection 'https://github.com/bertrandmartel/speed-test-lib.git'
-                    url siteUrl
+                    connection = 'scm:git:git://github.com/bertrandmartel/speed-test-lib.git'
+                    developerConnection = 'scm:git:ssh://github.com/bertrandmartel/speed-test-lib.git'
+                    url = 'https://github.com/bertrandmartel/speed-test-lib'
                 }
             }
-            whenConfigured {
-                p ->
-                    p.dependencies = p.dependencies.findAll {
-                        dep -> (dep.artifactId.notIn(["junit", "concurrentunit", "json-simple", "gson"]))
-                    }
-            }
         }
     }
 }
 
-Object.metaClass.notIn = { Object collection ->
-    !(delegate in collection)
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-task findConventions << {
-    println project.getConvention()
-}
-
-task generateJavadoc(type: Javadoc) {
-    source = sourceSets.main.allJava
-    classpath = configurations.compile
-    destinationDir = file("./doc/")
-}
-
-compileJava {
-    sourceCompatibility = "1.7"
-    targetCompatibility = "1.7"
-    options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-compileTestJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-test {
-    testLogging.showStandardStreams = true
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
+tasks.register('generateJavadoc', Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("${project.projectDir}/doc/")
+    failOnError = false
 }

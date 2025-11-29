@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * <p/>
- * Copyright (c) 2016-2017 Bertrand Martel
+ * Copyright (c) 2016-2024 Bertrand Martel
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,27 @@
  * THE SOFTWARE.
  */
 
-package fr.bmartel.speedtest.test.server;
+package fr.bmartel.speedtest.http;
 
-import fr.bmartel.speedtest.http.IHttpFrame;
-import fr.bmartel.speedtest.http.HttpStates;
+public class StatusCodeObject {
+    private final int code;
+    private final String reasonPhrase;
 
-/**
- * Http custom event : notify anybody that add that event listener to server
- * list of http request / response.
- *
- * @author Bertrand Martel
- */
-public interface IHttpServerEventListener {
+    public StatusCodeObject(int code, String reasonPhrase) {
+        this.code = code;
+        this.reasonPhrase = reasonPhrase;
+    }
 
-    /**
-     * called wen server is started.
-     */
-    void onServerStarted();
+    public int getCode() {
+        return code;
+    }
 
-    /**
-     * called when Http frame received from inputstream.
-     *
-     * @param httpFrame       http frame object
-     * @param receptionStates reception decoding states (should be HTTP_FRAME_OK if no
-     *                        decoding error happened)
-     */
-    void onHttpFrameReceived(IHttpFrame httpFrame,
-                             HttpStates receptionStates, IHttpStream httpStream);
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
 
+    @Override
+    public String toString() {
+        return code + " " + reasonPhrase;
+    }
 }
