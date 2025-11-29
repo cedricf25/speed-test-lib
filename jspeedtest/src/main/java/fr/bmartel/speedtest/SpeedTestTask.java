@@ -122,6 +122,11 @@ public class SpeedTestTask {
     private BigDecimal mDownloadPckSize = BigDecimal.ZERO;
 
     /**
+     * flag indicating chunked transfer encoding (no Content-Length).
+     */
+    private boolean mChunkedTransfer = false;
+
+    /**
      * FTP inputstream.
      */
     private InputStream mFtpInputstream;
@@ -603,6 +608,7 @@ public class SpeedTestTask {
 
         mDownloadTemporaryPacketSize = 0;
         mDlComputationTempPacketSize = 0;
+        mChunkedTransfer = false;
 
         try {
             final HttpFrame httpFrame = new HttpFrame();
@@ -620,7 +626,13 @@ public class SpeedTestTask {
                 SpeedTestUtils.checkHttpContentLengthError(mForceCloseSocket,
                         mListenerList, httpFrame);
 
-                mDownloadPckSize = new BigDecimal(httpFrame.getContentLength());
+                mChunkedTransfer = httpFrame.isChunkedTransfer();
+
+                if (mChunkedTransfer) {
+                    mDownloadPckSize = BigDecimal.valueOf(-1);
+                } else {
+                    mDownloadPckSize = new BigDecimal(httpFrame.getContentLength());
+                }
 
                 if (mRepeatWrapper.isRepeatDownload()) {
                     mRepeatWrapper.updatePacketSize(mDownloadPckSize);
@@ -731,7 +743,7 @@ public class SpeedTestTask {
                 }
             }
 
-            if (mDownloadTemporaryPacketSize == mDownloadPckSize.longValueExact()) {
+            if (!mChunkedTransfer && mDownloadTemporaryPacketSize == mDownloadPckSize.longValueExact()) {
                 break;
             }
         }

@@ -37,6 +37,7 @@ public class HttpFrame implements IHttpFrame {
     private int statusCode = -1;
     private String reasonPhrase = "";
     private long contentLength = -1;
+    private boolean chunkedTransfer = false;
     private final Map<String, String> headers = new HashMap<>();
     private String httpVersion = "";
     private String uri = "";
@@ -153,8 +154,14 @@ public class HttpFrame implements IHttpFrame {
                     contentLength = Long.parseLong(value);
                 } catch (NumberFormatException ignored) {
                 }
+            } else if ("transfer-encoding".equals(name) && value.toLowerCase().contains("chunked")) {
+                chunkedTransfer = true;
             }
         }
+    }
+
+    public boolean isChunkedTransfer() {
+        return chunkedTransfer;
     }
 
     @Override
