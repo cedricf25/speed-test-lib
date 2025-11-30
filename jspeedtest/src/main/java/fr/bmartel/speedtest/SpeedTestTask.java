@@ -627,7 +627,7 @@ public class SpeedTestTask {
                 SpeedTestUtils.checkHttpContentLengthError(mForceCloseSocket,
                         mListenerList, httpFrame);
 
-                mChunkedTransfer = httpFrame.isChunkedTransfer();
+                mChunkedTransfer = httpFrame.isChunkedTransfer() || httpFrame.getContentLength() <= 0;
 
                 if (mChunkedTransfer) {
                     mDownloadPckSize = BigDecimal.valueOf(-1);

@@ -201,14 +201,8 @@ public class SpeedTestUtils {
             final boolean forceCloseSocket,
             final List<ISpeedTestListener> listenerList,
             final HttpFrame httpFrame) {
-
-        if (httpFrame.getContentLength() <= 0 && !httpFrame.isChunkedTransfer() && !forceCloseSocket) {
-            for (int i = 0; i < listenerList.size(); i++) {
-                listenerList.get(i).onError(SpeedTestError.INVALID_HTTP_RESPONSE, "Error content length " +
-                        "is inconsistent (contentLength=" + httpFrame.getContentLength() +
-                        ", chunked=" + httpFrame.isChunkedTransfer() +
-                        ", headers=" + httpFrame.getHeaders() + ")");
-            }
-        }
+        // For speed tests, we don't require Content-Length or chunked encoding.
+        // We simply read until connection closes or timeout.
+        // This check is now a no-op to support all server response types.
     }
 }
