@@ -82,6 +82,11 @@ public class SpeedTestTask {
     private Socket mSocket;
 
     /**
+     * lock object for socket operations.
+     */
+    private final Object mSocketLock = new Object();
+
+    /**
      * start time triggered in millis.
      */
     private long mTimeStart;
@@ -539,65 +544,77 @@ public class SpeedTestTask {
      */
     private void connectAndExecuteTask(final Runnable task, final boolean download, final int uploadSize) {
 
-        // close mSocket before recreating it
-        if (mSocket != null) {
-            closeSocket();
-        }
-        try {
-            if ("https".equals(mProtocol)) {
-                final SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                final Socket plainSocket = new Socket();
-                plainSocket.setReuseAddress(true);
-                plainSocket.setKeepAlive(true);
-                plainSocket.connect(new InetSocketAddress(mHostname, mPort));
-                mSocket = ssf.createSocket(plainSocket, mHostname, mPort, true);
-                ((javax.net.ssl.SSLSocket) mSocket).startHandshake();
-            } else {
-                mSocket = new Socket();
-                mSocket.setReuseAddress(true);
-                mSocket.setKeepAlive(true);
-                mSocket.connect(new InetSocketAddress(mHostname, mPort));
-            }
-
-            if (mSocketInterface.getSocketTimeout() != 0 && download) {
-                mSocket.setSoTimeout(mSocketInterface.getSocketTimeout());
-            }
-
-            if (mReadExecutorService == null || mReadExecutorService.isShutdown()) {
-                mReadExecutorService = Executors.newSingleThreadExecutor();
-            }
-
-            mReadExecutorService.execute(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    if (download) {
-                        startSocketDownloadTask(mProtocol, mHostname);
-                    } else {
-                        startSocketUploadTask(mHostname, uploadSize);
+        synchronized (mSocketLock) {
+            if (mSocket != null) {
+                try {
+                    if (!mSocket.isClosed()) {
+                        mSocket.close();
                     }
+                } catch (IOException e) {
                 }
-            });
-
-            if (mWriteExecutorService == null || mWriteExecutorService.isShutdown()) {
-                mWriteExecutorService = Executors.newSingleThreadExecutor();
+                mSocket = null;
             }
 
-            mWriteExecutorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (task != null) {
-                        task.run();
-                    }
+            try {
+                Socket newSocket;
+                if ("https".equals(mProtocol)) {
+                    final SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                    final Socket plainSocket = new Socket();
+                    plainSocket.setReuseAddress(true);
+                    plainSocket.setKeepAlive(true);
+                    plainSocket.connect(new InetSocketAddress(mHostname, mPort));
+                    newSocket = ssf.createSocket(plainSocket, mHostname, mPort, true);
+                    ((javax.net.ssl.SSLSocket) newSocket).startHandshake();
+                } else {
+                    newSocket = new Socket();
+                    newSocket.setReuseAddress(true);
+                    newSocket.setKeepAlive(true);
+                    newSocket.connect(new InetSocketAddress(mHostname, mPort));
                 }
-            });
 
-        } catch (IOException e) {
-            if (!mErrorDispatched) {
-                SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList, e.getMessage());
+                if (mSocketInterface.getSocketTimeout() != 0 && download) {
+                    newSocket.setSoTimeout(mSocketInterface.getSocketTimeout());
+                }
+
+                mSocket = newSocket;
+
+            } catch (IOException e) {
+                if (!mErrorDispatched) {
+                    SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList, e.getMessage());
+                }
+                return;
             }
         }
+
+        if (mReadExecutorService == null || mReadExecutorService.isShutdown()) {
+            mReadExecutorService = Executors.newSingleThreadExecutor();
+        }
+
+        mReadExecutorService.execute(new Runnable() {
+
+            @Override
+            public void run() {
+
+                if (download) {
+                    startSocketDownloadTask(mProtocol, mHostname);
+                } else {
+                    startSocketUploadTask(mHostname, uploadSize);
+                }
+            }
+        });
+
+        if (mWriteExecutorService == null || mWriteExecutorService.isShutdown()) {
+            mWriteExecutorService = Executors.newSingleThreadExecutor();
+        }
+
+        mWriteExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (task != null) {
+                    task.run();
+                }
+            }
+        });
     }
 
     /**
@@ -1411,11 +1428,13 @@ public class SpeedTestTask {
      * Close socket streams and mSocket object.
      */
     public void closeSocket() {
-
-        if (mSocket != null) {
-            try {
-                mSocket.close();
-            } catch (IOException e) {
+        synchronized (mSocketLock) {
+            if (mSocket != null) {
+                try {
+                    mSocket.close();
+                } catch (IOException e) {
+                }
+                mSocket = null;
             }
         }
     }
