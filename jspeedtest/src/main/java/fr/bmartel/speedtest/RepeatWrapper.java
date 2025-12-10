@@ -158,7 +158,7 @@ public class RepeatWrapper {
             rates = rates.add(rate);
         }
 
-        if (!mRepeatTransferRateList.isEmpty()) {
+        if (!mRepeatTransferRateList.isEmpty() && mRepeatPacketSize.compareTo(BigDecimal.ZERO) != 0) {
             downloadRepeatRateOctet = rates.add(downloadRepeatRateOctet).divide(new BigDecimal(mRepeatTransferRateList
                     .size()).add
                     (new BigDecimal(mRepeatTempPckSize).divide(mRepeatPacketSize, scale, roundingMode)
