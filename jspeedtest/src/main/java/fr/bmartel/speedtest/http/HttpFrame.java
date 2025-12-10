@@ -34,6 +34,9 @@ import java.util.Map;
 
 public class HttpFrame implements IHttpFrame {
 
+    private static final int MAX_LINE_LENGTH = 8192;
+    private static final int MAX_HEADER_SIZE = 65536;
+
     private int statusCode = -1;
     private String reasonPhrase = "";
     private long contentLength = -1;
@@ -44,11 +47,31 @@ public class HttpFrame implements IHttpFrame {
     private String method = "";
     private String body = "";
 
+    private String readLineLimited(final BufferedReader reader, final int maxLength) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        int ch;
+        while ((ch = reader.read()) != -1) {
+            if (ch == '\n') {
+                break;
+            }
+            if (ch != '\r') {
+                sb.append((char) ch);
+            }
+            if (sb.length() > maxLength) {
+                throw new IOException("Line exceeds maximum length: " + maxLength);
+            }
+        }
+        if (sb.length() == 0 && ch == -1) {
+            return null;
+        }
+        return sb.toString();
+    }
+
     public HttpStates decodeFrame(final InputStream inputStream) {
         try {
             final BufferedReader reader = new BufferedReader(
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            final String statusLine = reader.readLine();
+            final String statusLine = readLineLimited(reader, MAX_LINE_LENGTH);
 
             if (statusLine == null || statusLine.isEmpty()) {
                 return HttpStates.HTTP_FRAME_ERROR;
@@ -66,9 +89,14 @@ public class HttpFrame implements IHttpFrame {
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
             String line;
-            while ((line = reader.readLine()) != null) {
+            int totalSize = 0;
+            while ((line = readLineLimited(reader, MAX_LINE_LENGTH)) != null) {
                 if (line.isEmpty()) {
                     break;
+                }
+                totalSize += line.length();
+                if (totalSize > MAX_HEADER_SIZE) {
+                    return HttpStates.HTTP_FRAME_ERROR;
                 }
                 parseHeaderLine(line);
             }
@@ -82,7 +110,7 @@ public class HttpFrame implements IHttpFrame {
     public HttpStates parseHttp(final InputStream inputStream) throws IOException {
         final BufferedReader reader = new BufferedReader(
                 new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        final String firstLine = reader.readLine();
+        final String firstLine = readLineLimited(reader, MAX_LINE_LENGTH);
 
         if (firstLine == null || firstLine.isEmpty()) {
             return HttpStates.HTTP_FRAME_ERROR;
@@ -94,9 +122,14 @@ public class HttpFrame implements IHttpFrame {
         }
 
         String line;
-        while ((line = reader.readLine()) != null) {
+        int totalSize = 0;
+        while ((line = readLineLimited(reader, MAX_LINE_LENGTH)) != null) {
             if (line.isEmpty()) {
                 break;
+            }
+            totalSize += line.length();
+            if (totalSize > MAX_HEADER_SIZE) {
+                return HttpStates.HTTP_FRAME_ERROR;
             }
             parseHeaderLine(line);
         }

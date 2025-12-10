@@ -42,12 +42,12 @@ public class SpeedTestConst {
     /**
      * size of the write read buffer for downloading.
      */
-    public static final int READ_BUFFER_SIZE = 65535;
+    public static final int READ_BUFFER_SIZE = 262144;
 
     /**
      * default size of each packet sent to upload server.
      */
-    public static final int DEFAULT_UPLOAD_SIZE = 65535;
+    public static final int DEFAULT_UPLOAD_SIZE = 262144;
 
     /**
      * default socket timeout in milliseconds.
