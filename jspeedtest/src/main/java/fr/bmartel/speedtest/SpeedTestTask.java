@@ -628,14 +628,25 @@ public class SpeedTestTask {
         mDlComputationTempPacketSize = 0;
         mChunkedTransfer = false;
 
+        final Socket socket;
+        synchronized (mSocketLock) {
+            socket = mSocket;
+        }
+
+        if (socket == null) {
+            SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList,
+                    SpeedTestError.CONNECTION_ERROR, "socket is null");
+            return;
+        }
+
         try {
             final HttpFrame httpFrame = new HttpFrame();
 
-            final HttpStates httFrameState = httpFrame.decodeFrame(mSocket.getInputStream());
+            final HttpStates httFrameState = httpFrame.decodeFrame(socket.getInputStream());
 
             SpeedTestUtils.checkHttpFrameError(mForceCloseSocket, mListenerList, httFrameState);
 
-            final HttpStates httpHeaderState = httpFrame.parseHeader(mSocket.getInputStream());
+            final HttpStates httpHeaderState = httpFrame.parseHeader(socket.getInputStream());
             SpeedTestUtils.checkHttpHeaderError(mForceCloseSocket, mListenerList, httpHeaderState);
 
             if (httpFrame.getStatusCode() == SpeedTestConst.HTTP_OK &&
@@ -665,7 +676,7 @@ public class SpeedTestTask {
                     mRepeatWrapper.setStartDate(mTimeStart);
                 }
 
-                downloadReadingLoop();
+                downloadReadingLoop(socket.getInputStream());
                 mTimeEnd = System.nanoTime();
 
                 closeSocket();
@@ -738,14 +749,15 @@ public class SpeedTestTask {
     /**
      * start download reading loop + monitor progress.
      *
+     * @param inputStream the socket input stream to read from
      * @throws IOException mSocket io exception
      */
-    private void downloadReadingLoop() throws IOException {
+    private void downloadReadingLoop(final InputStream inputStream) throws IOException {
 
         final byte[] buffer = new byte[SpeedTestConst.READ_BUFFER_SIZE];
         int read;
 
-        while ((read = mSocket.getInputStream().read(buffer)) != -1) {
+        while ((read = inputStream.read(buffer)) != -1) {
 
             mDownloadTemporaryPacketSize += read;
             mDlComputationTempPacketSize += read;
