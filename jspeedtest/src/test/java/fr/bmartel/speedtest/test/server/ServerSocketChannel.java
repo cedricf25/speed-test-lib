@@ -112,8 +112,6 @@ public class ServerSocketChannel implements Runnable, IHttpStream {
                     httpStates, this);
 
             closeSocket();
-        } catch (InterruptedException e) {
-            //e.printStackTrace();
         } catch (IOException e) {
             //e.printStackTrace();
         }

@@ -46,7 +46,7 @@ public class SpeedTestRedirect extends AbstractTest {
     private static Waiter mWaiter;
 
     @Test
-    public void redirectTest() throws TimeoutException {
+    public void redirectTest() throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 

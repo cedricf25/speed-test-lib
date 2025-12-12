@@ -66,7 +66,7 @@ public class SpeedTestRepeatTest extends AbstractTest {
      */
     @Test
     @Ignore
-    public void downloadHTTPRepeatTest() throws TimeoutException, IllegalAccessException, NoSuchFieldException {
+    public void downloadHTTPRepeatTest() throws TimeoutException, InterruptedException, IllegalAccessException, NoSuchFieldException {
         repeatTest(true, true);
     }
 
@@ -75,7 +75,7 @@ public class SpeedTestRepeatTest extends AbstractTest {
      */
     @Test
     @Ignore
-    public void uploadHTTPRepeatTest() throws TimeoutException, IllegalAccessException, NoSuchFieldException {
+    public void uploadHTTPRepeatTest() throws TimeoutException, InterruptedException, IllegalAccessException, NoSuchFieldException {
         repeatTest(false, true);
     }
 
@@ -85,7 +85,7 @@ public class SpeedTestRepeatTest extends AbstractTest {
      * @param download define if download or upload is testing.
      * @param http     http or ftp mode
      */
-    private void repeatTest(final boolean download, final boolean http) throws TimeoutException, IllegalAccessException,
+    private void repeatTest(final boolean download, final boolean http) throws TimeoutException, InterruptedException, IllegalAccessException,
             NoSuchFieldException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);

@@ -70,7 +70,7 @@ public class SpeedTestProxyTest extends ServerRetryTest {
 
     @Test
     @Ignore
-    public void downloadProxy1MTest() throws TimeoutException {
+    public void downloadProxy1MTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload("http://" + TestCommon.SPEED_TEST_SERVER_HOST + TestCommon.SPEED_TEST_SERVER_URI_DL_1MO);
         stopTask();
@@ -78,7 +78,7 @@ public class SpeedTestProxyTest extends ServerRetryTest {
 
     @Test
     @Ignore
-    public void downloadProxyRedirectTest() throws TimeoutException {
+    public void downloadProxyRedirectTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(TestCommon.SPEED_TEST_REDIRECT_SERVER);
         stopTask();
@@ -86,13 +86,13 @@ public class SpeedTestProxyTest extends ServerRetryTest {
 
     @Test
     @Ignore
-    public void uploadProxy1MTest() throws TimeoutException {
+    public void uploadProxy1MTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testUpload("http://" + TestCommon.SPEED_TEST_SERVER_HOST + TestCommon.SPEED_TEST_SERVER_URI_UL, 1000000, true);
         stopTask();
     }
 
-    private void initTask(final boolean download) throws TimeoutException {
+    private void initTask(final boolean download) throws TimeoutException, InterruptedException {
         mSocket = new SpeedTestSocket();
 
         mSocket.setProxyServer(TestCommon.SPEED_TEST_PROXY_SERVER);
@@ -143,7 +143,7 @@ public class SpeedTestProxyTest extends ServerRetryTest {
      *
      * @param uri
      */
-    private void testDownload(final String uri) throws TimeoutException {
+    private void testDownload(final String uri) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 
@@ -172,7 +172,7 @@ public class SpeedTestProxyTest extends ServerRetryTest {
      *
      * @param size
      */
-    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException {
+    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 

@@ -74,7 +74,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test socket connection error.
      */
     @Test
-    public void socketConnectionErrorTest() throws TimeoutException, NoSuchMethodException, IllegalAccessException,
+    public void socketConnectionErrorTest() throws TimeoutException, InterruptedException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, NoSuchFieldException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
@@ -133,7 +133,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      */
     private void testErrorHandler(final List<ISpeedTestListener> listenerList, final boolean forceCloseStatus,
                                   final boolean dispatchError)
-            throws TimeoutException {
+            throws TimeoutException, InterruptedException {
 
         mForceStop = false;
 
@@ -186,7 +186,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test socket timeout error.
      */
     @Test
-    public void socketTimeoutErrorTest() throws TimeoutException, NoSuchMethodException, IllegalAccessException,
+    public void socketTimeoutErrorTest() throws TimeoutException, InterruptedException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, NoSuchFieldException {
 
         mNoCheckMessage = true;
@@ -199,7 +199,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test http frame error.
      */
     @Test
-    public void httpFrameErrorTest() throws TimeoutException, NoSuchMethodException, IllegalAccessException,
+    public void httpFrameErrorTest() throws TimeoutException, InterruptedException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, NoSuchFieldException {
 
         mNoCheckMessage = false;
@@ -219,7 +219,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test http header error.
      */
     @Test
-    public void httpHeaderErrorTest() throws TimeoutException, NoSuchMethodException, IllegalAccessException,
+    public void httpHeaderErrorTest() throws TimeoutException, InterruptedException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, NoSuchFieldException {
 
         mNoCheckMessage = false;
@@ -239,7 +239,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test http content length error.
      */
     @Test
-    public void httpContentLengthErrorTest() throws TimeoutException, NoSuchFieldException, IllegalAccessException {
+    public void httpContentLengthErrorTest() throws TimeoutException, InterruptedException, NoSuchFieldException, IllegalAccessException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
         mNoCheckMessage = false;
@@ -261,7 +261,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test unknown host error for HTTP download.
      */
     @Test
-    public void unknownHostHTTPDownloadTest() throws TimeoutException {
+    public void unknownHostHTTPDownloadTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(true, ConnectionError.HTTP_UNKNOWN_HOST);
     }
 
@@ -269,7 +269,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test unknown host error for HTTP upload.
      */
     @Test
-    public void unknownHostHTTPUploadTest() throws TimeoutException {
+    public void unknownHostHTTPUploadTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(false, ConnectionError.HTTP_UNKNOWN_HOST);
     }
 
@@ -277,7 +277,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test unknown host error for FTP download.
      */
     @Test
-    public void unknownHostFTPDownloadTest() throws TimeoutException {
+    public void unknownHostFTPDownloadTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(true, ConnectionError.FTP_UNKNOWN_HOST);
     }
 
@@ -285,27 +285,27 @@ public class SpeedTestErrorTest extends AbstractTest {
      * Test unknown host error for FTP upload.
      */
     @Test
-    public void unknownHostFTPUploadTest() throws TimeoutException {
+    public void unknownHostFTPUploadTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(false, ConnectionError.FTP_UNKNOWN_HOST);
     }
 
     @Test
-    public void downloadBadStatusCodeTest() throws TimeoutException {
+    public void downloadBadStatusCodeTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(true, ConnectionError.BAD_STATUS);
     }
 
     @Test
-    public void uploadBadStatusCodeTest() throws TimeoutException {
+    public void uploadBadStatusCodeTest() throws TimeoutException, InterruptedException {
         connectionErrorTest(false, ConnectionError.BAD_STATUS);
     }
 
     @Test
-    public void downloadFTPBadUri() throws TimeoutException {
+    public void downloadFTPBadUri() throws TimeoutException, InterruptedException {
         connectionErrorTest(true, ConnectionError.FTP_BAD_URI);
     }
 
     @Test
-    public void uploadFTPBadUri() throws TimeoutException {
+    public void uploadFTPBadUri() throws TimeoutException, InterruptedException {
         connectionErrorTest(false, ConnectionError.FTP_BAD_URI);
     }
 
@@ -314,7 +314,7 @@ public class SpeedTestErrorTest extends AbstractTest {
      *
      * @param download define if mDownload or upload is testing.
      */
-    private void connectionErrorTest(final boolean download, final ConnectionError error) throws TimeoutException {
+    private void connectionErrorTest(final boolean download, final ConnectionError error) throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
         mWaiter = new Waiter();

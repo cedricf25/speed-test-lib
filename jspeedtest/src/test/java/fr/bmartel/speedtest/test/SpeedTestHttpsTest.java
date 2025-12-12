@@ -69,7 +69,7 @@ public class SpeedTestHttpsTest extends ServerRetryTest {
     private Waiter mWaiter;
 
     @Test
-    public void downloadHttpsTest() throws TimeoutException {
+    public void downloadHttpsTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(TestCommon.SPEED_TEST_SERVER_URI_HTTPS);
         stopTask();
@@ -77,20 +77,20 @@ public class SpeedTestHttpsTest extends ServerRetryTest {
 
     @Test
     @Ignore
-    public void downloadHttpsRedirectTest() throws TimeoutException {
+    public void downloadHttpsRedirectTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(TestCommon.SPEED_TEST_SERVER_URI_REDIRECT_HTTPS);
         stopTask();
     }
 
     @Test
-    public void uploadHttpsTest() throws TimeoutException {
+    public void uploadHttpsTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testUpload(TestCommon.SPEED_TEST_SERVER_URI_HTTPS, 1000000, true);
         stopTask();
     }
 
-    private void initTask(final boolean download) throws TimeoutException {
+    private void initTask(final boolean download) throws TimeoutException, InterruptedException {
         mSocket = new SpeedTestSocket();
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
@@ -139,7 +139,7 @@ public class SpeedTestHttpsTest extends ServerRetryTest {
      *
      * @param uri
      */
-    private void testDownload(final String uri) throws TimeoutException {
+    private void testDownload(final String uri) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 
@@ -168,7 +168,7 @@ public class SpeedTestHttpsTest extends ServerRetryTest {
      *
      * @param size
      */
-    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException {
+    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 

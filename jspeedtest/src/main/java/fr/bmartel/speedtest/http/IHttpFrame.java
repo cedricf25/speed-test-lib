@@ -43,4 +43,6 @@ public interface IHttpFrame {
     String getMethod();
 
     String getBody();
+
+    boolean isHttpRequestFrame();
 }

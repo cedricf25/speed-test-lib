@@ -61,14 +61,14 @@ public class SpeedTestFTPTest extends AbstractTest {
     }
 
     @Test
-    public void uploadTest() throws TimeoutException {
+    public void uploadTest() throws TimeoutException, InterruptedException {
         uploadFTP(false);
         uploadFTP(true);
         mSocket.setFtpMode(FtpMode.ACTIVE);
         uploadFTP(true);
     }
 
-    private void downloadFtp() throws TimeoutException {
+    private void downloadFtp() throws TimeoutException, InterruptedException {
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
         final Waiter waiter = new Waiter();
@@ -111,13 +111,13 @@ public class SpeedTestFTPTest extends AbstractTest {
     }
 
     @Test
-    public void downloadTest() throws TimeoutException {
+    public void downloadTest() throws TimeoutException, InterruptedException {
         downloadFtp();
         mSocket.setFtpMode(FtpMode.ACTIVE);
         downloadFtp();
     }
 
-    private void uploadFTP(final boolean useFileStorage) throws TimeoutException {
+    private void uploadFTP(final boolean useFileStorage) throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -166,7 +166,7 @@ public class SpeedTestFTPTest extends AbstractTest {
     }
 
     @Test
-    public void downloadWithReportIntervalTest() throws TimeoutException {
+    public void downloadWithReportIntervalTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -227,7 +227,7 @@ public class SpeedTestFTPTest extends AbstractTest {
     }
 
     @Test
-    public void fixDurationTest() throws TimeoutException {
+    public void fixDurationTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -269,7 +269,7 @@ public class SpeedTestFTPTest extends AbstractTest {
 
 
     @Test
-    public void fixDurationWithReportIntervalTest() throws TimeoutException {
+    public void fixDurationWithReportIntervalTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 

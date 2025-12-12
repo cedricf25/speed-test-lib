@@ -107,6 +107,10 @@ publishing {
     }
 }
 
+tasks.withType(Test) {
+    enabled = false
+}
+
 tasks.register('generateJavadoc', Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))

@@ -217,6 +217,20 @@ public class HttpFrame implements IHttpFrame {
         return headers;
     }
 
+    public void setHeaders(final Map<String, String> headers) {
+        this.headers.clear();
+        if (headers != null) {
+            this.headers.putAll(headers);
+            final String contentLengthValue = headers.get(HttpHeader.CONTENT_LENGTH);
+            if (contentLengthValue != null) {
+                try {
+                    contentLength = Long.parseLong(contentLengthValue);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+    }
+
     @Override
     public String getHttpVersion() {
         return httpVersion;
@@ -235,5 +249,10 @@ public class HttpFrame implements IHttpFrame {
     @Override
     public String getBody() {
         return body;
+    }
+
+    @Override
+    public boolean isHttpRequestFrame() {
+        return method != null && !method.isEmpty();
     }
 }

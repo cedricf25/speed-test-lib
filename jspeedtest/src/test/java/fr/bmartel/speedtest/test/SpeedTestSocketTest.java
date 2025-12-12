@@ -145,7 +145,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * test speed test mode value.
      */
     @Test
-    public void speedTestModeTest() throws TimeoutException {
+    public void speedTestModeTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
         Assert.assertEquals(HEADER + "speed test mode value after init", mSocket.getSpeedTestMode(),
@@ -254,7 +254,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * test mSocket valid value.
      */
     @Test
-    public void socketTest() throws IllegalAccessException, NoSuchFieldException, TimeoutException {
+    public void socketTest() throws IllegalAccessException, NoSuchFieldException, TimeoutException, InterruptedException {
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
         mSocket.addSpeedTestListener(new ISpeedTestListener() {
@@ -288,7 +288,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      *
      * @param socket mSocket object
      */
-    private void testSocket(final SpeedTestSocket socket) throws TimeoutException, NoSuchFieldException,
+    private void testSocket(final SpeedTestSocket socket) throws TimeoutException, InterruptedException, NoSuchFieldException,
             IllegalAccessException {
 
         final Field fieldTask = socket.getClass().getDeclaredField("mTask");
@@ -376,7 +376,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * test download report not empty.
      */
     @Test
-    public void downloadReportNotEmptyTest() throws TimeoutException {
+    public void downloadReportNotEmptyTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -421,7 +421,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * test upload report empty.
      */
     @Test
-    public void uploadReportNotEmptyTest() throws TimeoutException {
+    public void uploadReportNotEmptyTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -465,7 +465,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * Test listener callback for progress & result.
      */
     @Test
-    public void progressResultCallbackDownloadTest() throws TimeoutException {
+    public void progressResultCallbackDownloadTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -516,7 +516,7 @@ public class SpeedTestSocketTest extends AbstractTest {
      * Test listener callback for progress & result for upload.
      */
     @Test
-    public void progressResultCallbackUploadTest() throws TimeoutException {
+    public void progressResultCallbackUploadTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -567,7 +567,7 @@ public class SpeedTestSocketTest extends AbstractTest {
     }
 
     @Test
-    public void fixDurationTest() throws TimeoutException {
+    public void fixDurationTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -610,7 +610,7 @@ public class SpeedTestSocketTest extends AbstractTest {
 
     /*
     @Test
-    public void fixDurationWithReportIntervalTest() throws TimeoutException {
+    public void fixDurationWithReportIntervalTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 
@@ -676,7 +676,7 @@ public class SpeedTestSocketTest extends AbstractTest {
     */
 
     @Test
-    public void downloadWithReportIntervalTest() throws TimeoutException {
+    public void downloadWithReportIntervalTest() throws TimeoutException, InterruptedException {
 
         mSocket.setSocketTimeout(TestCommon.DEFAULT_SOCKET_TIMEOUT);
 

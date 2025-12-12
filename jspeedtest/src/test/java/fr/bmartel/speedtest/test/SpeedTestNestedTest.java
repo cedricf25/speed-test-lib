@@ -27,7 +27,7 @@ public class SpeedTestNestedTest {
     private int chainCount = 2;
 
     @Test
-    public void nestedFixedDownload() throws TimeoutException {
+    public void nestedFixedDownload() throws TimeoutException, InterruptedException {
         final SpeedTestSocket speedTestSocket = new SpeedTestSocket();
 
         speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {

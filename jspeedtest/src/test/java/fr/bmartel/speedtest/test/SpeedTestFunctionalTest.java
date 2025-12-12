@@ -162,14 +162,14 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void download1MTest() throws TimeoutException {
+    public void download1MTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(SPEED_TEST_SERVER_URI_DL_1MO);
         stopTask();
     }
 
     @Test
-    public void downloadRedirectTest() throws TimeoutException {
+    public void downloadRedirectTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(SPEED_TEST_SERVER_URI_301);
         testDownload(SPEED_TEST_SERVER_URI_302);
@@ -178,21 +178,21 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void download5MTest() throws TimeoutException {
+    public void download5MTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(SPEED_TEST_SERVER_URI_DL_5MO);
         stopTask();
     }
 
     @Test
-    public void download10MTest() throws TimeoutException {
+    public void download10MTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testDownload(SPEED_TEST_SERVER_URI_DL_10MO);
         stopTask();
     }
 
     @Test
-    public void downloadErrorTest() throws TimeoutException {
+    public void downloadErrorTest() throws TimeoutException, InterruptedException {
         initTask(true);
         testError(SpeedTestError.MALFORMED_URI, "://" + SPEED_TEST_SERVER_HOST + ":" +
                 SPEED_TEST_SERVER_PORT +
@@ -201,14 +201,14 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void upload1MTest() throws TimeoutException {
+    public void upload1MTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testUpload(SPEED_TEST_SERVER_URI_UL, 1000000, true);
         stopTask();
     }
 
     @Test
-    public void uploadRedirectTest() throws TimeoutException {
+    public void uploadRedirectTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testUpload(SPEED_TEST_SERVER_URI_301, 1000000, true);
         testUpload(SPEED_TEST_SERVER_URI_302, 1000000, true);
@@ -217,14 +217,14 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void upload10MTest() throws TimeoutException {
+    public void upload10MTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testUpload(SPEED_TEST_SERVER_URI_UL, 10000000, true);
         stopTask();
     }
 
     @Test
-    public void uploadErrorTest() throws TimeoutException {
+    public void uploadErrorTest() throws TimeoutException, InterruptedException {
         initTask(false);
         testError(SpeedTestError.MALFORMED_URI, "://" + SPEED_TEST_SERVER_HOST + ":" +
                 SPEED_TEST_SERVER_PORT +
@@ -232,7 +232,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
         stopTask();
     }
 
-    private void initTask(final boolean download) throws TimeoutException {
+    private void initTask(final boolean download) throws TimeoutException, InterruptedException {
 
         calculateReference();
 
@@ -278,7 +278,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void timeoutTest() throws TimeoutException {
+    public void timeoutTest() throws TimeoutException, InterruptedException {
 
         calculateReference();
 
@@ -328,7 +328,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
      *
      * @param size
      */
-    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException {
+    private void testUpload(final String url, final int size, final boolean useFileStorage) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 
@@ -351,7 +351,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
      *
      * @param uri
      */
-    private void testDownload(final String uri) throws TimeoutException {
+    private void testDownload(final String uri) throws TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 
@@ -368,7 +368,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
      * Test URI malformed or unsupported.
      */
     private void testError(final SpeedTestError expectedError, final String uri, final boolean isDownload) throws
-            TimeoutException {
+            TimeoutException, InterruptedException {
 
         mWaiter = new Waiter();
 
@@ -402,7 +402,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     /**
      * start mServer & calculate transfer rate reference.
      */
-    private void calculateReference() throws TimeoutException {
+    private void calculateReference() throws TimeoutException, InterruptedException {
 
         startServer();
 
@@ -447,7 +447,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
 
     @Test
     @Ignore
-    public void chainDownloadUploadTest() throws TimeoutException {
+    public void chainDownloadUploadTest() throws TimeoutException, InterruptedException {
 
         mSocket = new SpeedTestSocket();
 
@@ -545,7 +545,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     }
 
     @Test
-    public void chainDownloadUploadRepeatTest() throws TimeoutException {
+    public void chainDownloadUploadRepeatTest() throws TimeoutException, InterruptedException {
 
         mSocket = new SpeedTestSocket();
 
@@ -671,7 +671,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
     /**
      * Start Http mServer.
      */
-    private void startServer() throws TimeoutException {
+    private void startServer() throws TimeoutException, InterruptedException {
 
         // initiate HTTP mServer
         mServer = new HttpServer(SPEED_TEST_SERVER_PORT);
@@ -781,8 +781,8 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
                                 break;
                         }
                         httpStream.writeHttpFrame(new HttpResponseFrame(
-                                StatusCodeList.OK, new HttpVersion(1, 1),
-                                new HashMap<String, String>(), body).toString().getBytes());
+                                StatusCodeList.OK, HttpVersion.HTTP_1_1,
+                                new HashMap<String, String>(), body).build());
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                         return;
@@ -807,7 +807,7 @@ public class SpeedTestFunctionalTest extends ServerRetryTest {
         final HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Location", url);
         httpStream.writeHttpFrame(new HttpResponseFrame(
-                code, new HttpVersion(1, 1),
-                headers, new byte[]{}).toString().getBytes());
+                code, HttpVersion.HTTP_1_1,
+                headers, new byte[]{}).build());
     }
 }

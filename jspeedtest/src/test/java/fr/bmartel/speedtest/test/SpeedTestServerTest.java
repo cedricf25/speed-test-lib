@@ -34,7 +34,6 @@ import fr.bmartel.speedtest.model.SpeedTestError;
 import fr.bmartel.speedtest.test.model.Server;
 import fr.bmartel.speedtest.test.utils.TestCommon;
 import net.jodah.concurrentunit.Waiter;
-import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import java.io.FileReader;
@@ -66,7 +65,7 @@ public class SpeedTestServerTest extends AbstractTest {
     }
 
     @Test
-    public void serverListTest() throws IOException, ParseException, TimeoutException {
+    public void serverListTest() throws IOException, TimeoutException, InterruptedException {
 
         initSocket();
 
