@@ -595,31 +595,42 @@ public class SpeedTestTask {
             mReadExecutorService = Executors.newSingleThreadExecutor();
         }
 
-        mReadExecutorService.execute(new Runnable() {
+        try {
+            mReadExecutorService.execute(new Runnable() {
 
-            @Override
-            public void run() {
+                @Override
+                public void run() {
 
-                if (download) {
-                    startSocketDownloadTask(mProtocol, mHostname);
-                } else {
-                    startSocketUploadTask(mHostname, uploadSize);
+                    if (download) {
+                        startSocketDownloadTask(mProtocol, mHostname);
+                    } else {
+                        startSocketUploadTask(mHostname, uploadSize);
+                    }
                 }
-            }
-        });
+            });
+        } catch (RejectedExecutionException e) {
+            SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList,
+                    SpeedTestError.CONNECTION_ERROR, "executor rejected task");
+            return;
+        }
 
         if (mWriteExecutorService == null || mWriteExecutorService.isShutdown()) {
             mWriteExecutorService = Executors.newSingleThreadExecutor();
         }
 
-        mWriteExecutorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (task != null) {
-                    task.run();
+        try {
+            mWriteExecutorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (task != null) {
+                        task.run();
+                    }
                 }
-            }
-        });
+            });
+        } catch (RejectedExecutionException e) {
+            SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList,
+                    SpeedTestError.CONNECTION_ERROR, "executor rejected task");
+        }
     }
 
     /**

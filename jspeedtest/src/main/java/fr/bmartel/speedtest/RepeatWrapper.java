@@ -226,6 +226,9 @@ public class RepeatWrapper {
         final ISpeedTestListener speedTestListener = new ISpeedTestListener() {
             @Override
             public void onCompletion(final SpeedTestReport report) {
+                if (mRepeatFinished) {
+                    return;
+                }
                 mRepeatTransferRateList.add(report.getTransferRateOctet());
                 startDownloadRepeat(uri);
                 mRepeatRequestNum++;
@@ -304,6 +307,9 @@ public class RepeatWrapper {
 
             @Override
             public void onCompletion(final SpeedTestReport report) {
+                if (mRepeatFinished) {
+                    return;
+                }
                 mRepeatTransferRateList.add(report.getTransferRateOctet());
                 startUploadRepeat(uri, fileSizeOctet);
                 mRepeatRequestNum++;
