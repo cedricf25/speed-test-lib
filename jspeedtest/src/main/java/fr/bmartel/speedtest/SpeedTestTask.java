@@ -385,7 +385,12 @@ public class SpeedTestTask {
             connectAndExecuteTask(new Runnable() {
                 @Override
                 public void run() {
-                    if (mSocket != null && !mSocket.isClosed()) {
+                    final Socket socket;
+                    synchronized (mSocketLock) {
+                        socket = mSocket;
+                    }
+
+                    if (socket != null && !socket.isClosed()) {
 
                         RandomAccessFile uploadFile = null;
                         final RandomGen randomGen = new RandomGen();
@@ -420,9 +425,9 @@ public class SpeedTestTask {
                             final int step = fileSizeOctet / uploadChunkSize;
                             final int remain = fileSizeOctet % uploadChunkSize;
 
-                            if (mSocket.getOutputStream() != null) {
+                            if (socket.getOutputStream() != null) {
 
-                                if (writeFlushSocket(head.getBytes()) != 0) {
+                                if (writeFlushSocket(socket, head.getBytes()) != 0) {
                                     throw new SocketTimeoutException();
                                 }
 
@@ -448,7 +453,7 @@ public class SpeedTestTask {
                                             mUploadTempFileSize,
                                             uploadChunkSize);
 
-                                    if (writeFlushSocket(chunk) != 0) {
+                                    if (writeFlushSocket(socket, chunk) != 0) {
                                         throw new SocketTimeoutException();
                                     }
 
@@ -475,7 +480,7 @@ public class SpeedTestTask {
                                         mUploadTempFileSize,
                                         remain);
 
-                                if (remain != 0 && writeFlushSocket(chunk) != 0) {
+                                if (remain != 0 && writeFlushSocket(socket, chunk) != 0) {
                                     throw new SocketTimeoutException();
                                 } else {
 
@@ -787,10 +792,21 @@ public class SpeedTestTask {
      */
     private void startSocketUploadTask(final String hostname, final int size) {
 
+        final Socket socket;
+        synchronized (mSocketLock) {
+            socket = mSocket;
+        }
+
+        if (socket == null) {
+            SpeedTestUtils.dispatchError(mSocketInterface, mForceCloseSocket, mListenerList,
+                    SpeedTestError.CONNECTION_ERROR, "socket is null");
+            return;
+        }
+
         try {
             final HttpFrame frame = new HttpFrame();
 
-            final HttpStates httpStates = frame.parseHttp(mSocket.getInputStream());
+            final HttpStates httpStates = frame.parseHttp(socket.getInputStream());
 
             if (httpStates == HttpStates.HTTP_FRAME_OK) {
 
@@ -870,11 +886,15 @@ public class SpeedTestTask {
         connectAndExecuteTask(new Runnable() {
             @Override
             public void run() {
+                final Socket socket;
+                synchronized (mSocketLock) {
+                    socket = mSocket;
+                }
 
-                if (mSocket != null && !mSocket.isClosed()) {
+                if (socket != null && !socket.isClosed()) {
 
                     try {
-                        if ((mSocket.getOutputStream() != null) && (writeFlushSocket(data) != 0)) {
+                        if ((socket.getOutputStream() != null) && (writeFlushSocket(socket, data) != 0)) {
                             throw new SocketTimeoutException();
                         }
                     } catch (SocketTimeoutException e) {
@@ -911,13 +931,18 @@ public class SpeedTestTask {
 
 
     /**
-     * write and flush mSocket.
+     * write and flush socket.
      *
+     * @param socket socket to write to
      * @param data payload to write
      * @return error status (-1 for error)
-     * @throws IOException mSocket io exception
+     * @throws IOException socket io exception
      */
-    private int writeFlushSocket(final byte[] data) throws IOException {
+    private int writeFlushSocket(final Socket socket, final byte[] data) throws IOException {
+
+        if (socket == null || socket.isClosed()) {
+            return -1;
+        }
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -930,8 +955,8 @@ public class SpeedTestTask {
              */
             public Integer call() {
                 try {
-                    mSocket.getOutputStream().write(data);
-                    mSocket.getOutputStream().flush();
+                    socket.getOutputStream().write(data);
+                    socket.getOutputStream().flush();
                 } catch (IOException e) {
                     return -1;
                 }
